@@ -2,7 +2,7 @@ import os
 from flask import Blueprint, request, render_template, jsonify
 from werkzeug.utils import secure_filename
 import openai
-import app
+from flask import current_app as app
 from app import db
 from app.models import Note
 from app.utils import allowed_file
