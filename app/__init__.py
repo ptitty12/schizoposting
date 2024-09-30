@@ -9,7 +9,7 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__, template_folder=os.path.abspath('templates'))
     app.config.from_object(Config)
-
+    app.config['MAX_CONTENT_LENGTH'] = 55 * 1024 * 1024  # 16 MB limit
     db.init_app(app)
 
     # Set OpenAI API key
