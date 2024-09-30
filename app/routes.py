@@ -1,17 +1,20 @@
 import os
 from flask import Blueprint, request, render_template, jsonify
 from werkzeug.utils import secure_filename
+from openai import OpenAI
 from flask import current_app as app
 from app import db
 from app.models import Note
 from app.utils import allowed_file
 from flask_cors import CORS
-import openai
 import io
 
 main = Blueprint('main', __name__)
 CORS(main)
 
+
+# Initialize the OpenAI client
+client = OpenAI(api_key=app.config['OPENAI_API_KEY'])
 
 @main.route('/upload', methods=['POST'])
 def upload_file():
@@ -32,7 +35,7 @@ def upload_file():
             file_object.name = file.filename  # Add a name attribute
 
             # Transcribe with Whisper API
-            transcript = openai.Audio.transcribe(
+            transcript = client.audio.transcriptions.create(
                 file=file_object,
                 model="whisper-1",
                 response_format="text",
