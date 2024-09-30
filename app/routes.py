@@ -1,8 +1,7 @@
 import os
-from flask import Blueprint, request, render_template, jsonify
+from flask import Blueprint, request, render_template, jsonify, current_app
 from werkzeug.utils import secure_filename
 from openai import OpenAI
-from flask import current_app as app
 from app import db
 from app.models import Note
 from app.utils import allowed_file
@@ -12,9 +11,8 @@ import io
 main = Blueprint('main', __name__)
 CORS(main)
 
-
-# Initialize the OpenAI client
-client = OpenAI(api_key=app.config['OPENAI_API_KEY'])
+def get_openai_client():
+    return OpenAI(api_key=current_app.config['OPENAI_API_KEY'])
 
 @main.route('/upload', methods=['POST'])
 def upload_file():
@@ -34,6 +32,9 @@ def upload_file():
             file_object = io.BytesIO(file_data)
             file_object.name = file.filename  # Add a name attribute
 
+            # Get the OpenAI client
+            client = get_openai_client()
+
             # Transcribe with Whisper API
             transcript = client.audio.transcriptions.create(
                 file=file_object,
@@ -52,9 +53,8 @@ def upload_file():
             return jsonify({'error': 'File type not allowed'}), 400
 
     except Exception as e:
-        app.logger.error(f'Error processing upload: {str(e)}')
+        current_app.logger.error(f'Error processing upload: {str(e)}')
         return jsonify({'error': 'Internal server error'}), 500
-
 
 @main.route('/')
 def index():
