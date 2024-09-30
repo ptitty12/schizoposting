@@ -15,6 +15,9 @@ CORS(main)
 from flask import current_app
 from werkzeug.exceptions import RequestEntityTooLarge
 
+import io
+from werkzeug.datastructures import FileStorage
+
 
 @main.route('/upload', methods=['POST'])
 def upload_file():
@@ -27,11 +30,15 @@ def upload_file():
             return jsonify({'error': 'No selected file'}), 400
 
         if file and allowed_file(file.filename):
-            # Process file in memory
-            audio_data = file.read()
+            # Read the file data
+            file_data = file.read()
+
+            # Create a file-like object
+            file_object = io.BytesIO(file_data)
+            file_object.name = file.filename  # Add a name attribute
 
             # Transcribe with Whisper API
-            transcript = openai.Audio.transcribe("whisper-1", audio_data)
+            transcript = openai.Audio.transcribe("whisper-1", file_object)
 
             # Save transcription to database
             new_note = Note(content=transcript['text'])
@@ -42,8 +49,6 @@ def upload_file():
         else:
             return jsonify({'error': 'File type not allowed'}), 400
 
-    except RequestEntityTooLarge:
-        return jsonify({'error': 'File too large'}), 413
     except Exception as e:
         current_app.logger.error(f'Error processing upload: {str(e)}')
         return jsonify({'error': 'Internal server error'}), 500

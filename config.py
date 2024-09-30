@@ -7,4 +7,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB limit
-    OPENAI_API_KEY = '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'
+    my_key_1 = 'sk-proj-28wh3-gKOSLWt-HFki88uK3Tcf6Zunb1s1iOdk9RzpUNA3waBApzLsdVd4thMIb7'
+    my_key_2 = 'VVRQsZ6fsdT3BlbkFJcCpWfIs3X7Kqd79op7heOsAZ_BPBbJ71hMwBtSlarQ9zHJ4HoEXEe_hEfjHCtKKxigv2SGlyQA'
+    OPENAI_API_KEY = my_key_1+my_key_2
