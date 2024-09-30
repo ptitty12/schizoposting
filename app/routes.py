@@ -1,7 +1,7 @@
 import os
 from flask import Blueprint, request, render_template, jsonify
 from werkzeug.utils import secure_filename
-import openai
+from openai import OpenAI
 from flask import current_app as app
 from app import db
 from app.models import Note
@@ -19,6 +19,12 @@ import io
 from werkzeug.datastructures import FileStorage
 
 
+
+import whisper
+
+# Load the model once when the application starts
+model = whisper.load_model("base")
+
 @main.route('/upload', methods=['POST'])
 def upload_file():
     try:
@@ -30,18 +36,18 @@ def upload_file():
             return jsonify({'error': 'No selected file'}), 400
 
         if file and allowed_file(file.filename):
-            # Read the file data
-            file_data = file.read()
+            # Save the file temporarily
+            temp_path = os.path.join('/tmp', file.filename)
+            file.save(temp_path)
 
-            # Create a file-like object
-            file_object = io.BytesIO(file_data)
-            file_object.name = file.filename  # Add a name attribute
+            # Transcribe the audio
+            result = model.transcribe(temp_path)
 
-            # Transcribe with Whisper API
-            transcript = openai.Audio.transcribe("whisper-1", file_object)
+            # Remove the temporary file
+            os.remove(temp_path)
 
             # Save transcription to database
-            new_note = Note(content=transcript['text'])
+            new_note = Note(content=result["text"])
             db.session.add(new_note)
             db.session.commit()
 
