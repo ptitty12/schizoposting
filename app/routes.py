@@ -35,6 +35,9 @@ def upload_file():
             # Get the OpenAI client
             client = get_openai_client()
 
+            # Get the IP address of the submitter
+            submitter_ip = request.remote_addr
+
             # Transcribe with Whisper API
             transcript = client.audio.transcriptions.create(
                 file=file_object,
@@ -43,8 +46,8 @@ def upload_file():
                 language="en"
             )
 
-            # Save transcription to database
-            new_note = Note(content=transcript)
+            # Save transcription to database with IP address
+            new_note = Note(content=transcript, ip_address=submitter_ip)
             db.session.add(new_note)
             db.session.commit()
 
