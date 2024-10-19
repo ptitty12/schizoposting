@@ -48,7 +48,7 @@ def upload_file():
 
             # Generate summary using ChatGPT
             chat_completion = client.chat.completions.create(
-                model="gpt-40-mini",
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that summarizes my random thoughts in a few words."},
                     {"role": "user", "content": f"Summarize this text in 5 words or less: {transcript}"}
