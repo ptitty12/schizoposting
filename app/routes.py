@@ -46,8 +46,18 @@ def upload_file():
                 language="en"
             )
 
-            # Save transcription to database with IP address
-            new_note = Note(content=transcript, ip_address=submitter_ip)
+            # Generate summary using ChatGPT
+            chat_completion = client.chat.completions.create(
+                model="gpt-40-mini",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that summarizes my random thoughts in a few words."},
+                    {"role": "user", "content": f"Summarize this text in 5 words or less: {transcript}"}
+                ]
+            )
+            summary = chat_completion.choices[0].message.content.strip()
+
+            # Save transcription and summary to database with IP address
+            new_note = Note(content=transcript, summary=summary, ip_address=submitter_ip)
             db.session.add(new_note)
             db.session.commit()
 

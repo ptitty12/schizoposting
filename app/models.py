@@ -6,3 +6,4 @@ class Note(db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     content = db.Column(db.Text, nullable=False)
     ip_address = db.Column(db.String(45), nullable=True)
+    summary = db.Column(db.String(100), nullable=True)
