@@ -36,7 +36,10 @@ def upload_file():
             client = get_openai_client()
 
             # Get the IP address of the submitter
-            submitter_ip = request.remote_addr
+            #submitter_ip = request.remote_addr
+            # Get the real IP address if behind a proxy
+            submitter_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+
 
             # Transcribe with Whisper API
             transcript = client.audio.transcriptions.create(
