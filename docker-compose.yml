@@ -1,0 +1,20 @@
+services:
+  schizoposting:
+    build: .
+    container_name: schizoposting
+    restart: unless-stopped
+
+    # Keep it private (only nginx should hit it)
+    ports:
+      - "127.0.0.1:5050:5000"
+
+    environment:
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-fallback-key-for-development}
+      # Force the DB path to be inside /app and persisted via the volume below
+      - DATABASE_URL=sqlite:////app/app.db
+
+    volumes:
+      # Persist SQLite DB
+      - ./app.db:/app/app.db
+      # Persist uploads
+      - ./uploads:/app/uploads
