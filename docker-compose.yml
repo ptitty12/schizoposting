@@ -1,20 +1,14 @@
+# Deployed by Dokploy (project "schizoposting"). Domains + Traefik labels are added by Dokploy at deploy time.
+# Secrets (FLASK_SECRET_KEY, OPENAI_API_KEY) come from the Environment tab in Dokploy.
 services:
-  schizoposting:
+  app:
     build: .
-    container_name: schizoposting
     restart: unless-stopped
-
-    # Keep it private (only nginx should hit it)
-    ports:
-      - "127.0.0.1:5050:5000"
-
     environment:
-      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY:-fallback-key-for-development}
-      # Force the DB path to be inside /app and persisted via the volume below
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - DATABASE_URL=sqlite:////app/app.db
-
     volumes:
-      # Persist SQLite DB
-      - ./app.db:/app/app.db
-      # Persist uploads
-      - ./uploads:/app/uploads
+      # live data lives outside the checkout so redeploys keep it
+      - /root/projects/_data/schizoposting/app.db:/app/app.db
+      - /root/projects/_data/schizoposting/uploads:/app/uploads
