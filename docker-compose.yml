@@ -1,11 +1,11 @@
 # Deployed by Dokploy (project "schizoposting"). Domains + Traefik labels are added by Dokploy at deploy time.
-# Secrets (FLASK_SECRET_KEY, OPENAI_API_KEY) are read from /root/projects/_data/schizoposting/.env on the server.
+# Secrets (FLASK_SECRET_KEY, OPENAI_API_KEY) are read from /etc/dokploy/env/schizoposting.env on the server.
 services:
   app:
     build: .
     restart: unless-stopped
     env_file:
-      - /root/projects/_data/schizoposting/.env
+      - /etc/dokploy/env/schizoposting.env
     environment:
       - DATABASE_URL=sqlite:////app/app.db
     volumes:
