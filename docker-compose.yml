@@ -1,12 +1,12 @@
 # Deployed by Dokploy (project "schizoposting"). Domains + Traefik labels are added by Dokploy at deploy time.
-# Secrets (FLASK_SECRET_KEY, OPENAI_API_KEY) come from the Environment tab in Dokploy.
+# Secrets (FLASK_SECRET_KEY, OPENAI_API_KEY) are read from /root/projects/_data/schizoposting/.env on the server.
 services:
   app:
     build: .
     restart: unless-stopped
+    env_file:
+      - /root/projects/_data/schizoposting/.env
     environment:
-      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - DATABASE_URL=sqlite:////app/app.db
     volumes:
       # live data lives outside the checkout so redeploys keep it
